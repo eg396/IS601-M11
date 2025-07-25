@@ -45,7 +45,7 @@ class User(Base):
     calculations = relationship("Calculation", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<User(name={self.first_name} {self.last_name}, email={self.email})>"
+        return f"<User(name={self.first_name} {self.last_name}, email={self.email})>" 
 
     @staticmethod
     def hash_password(password: str) -> str:
