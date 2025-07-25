@@ -2,9 +2,14 @@
 
 import subprocess
 import time
+from app.database import Base
 import pytest
 from playwright.sync_api import sync_playwright
 import requests
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from app.models.user import User
+from app.models.calculation import Calculation
 
 @pytest.fixture(scope='session')
 def fastapi_server():
@@ -72,3 +77,20 @@ def page(browser):
     page = browser.new_page()
     yield page
     page.close()
+
+TEST_DATABASE_URL = "sqlite:///:memory:"
+
+@pytest.fixture(scope="function")
+def db_session():
+    engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    # Create tables
+    Base.metadata.create_all(bind=engine)
+
+    # Provide a session to the test
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
