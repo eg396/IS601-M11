@@ -2,7 +2,8 @@
 ## IS 601 Module 11
 ## Evan Garvey
 
-from sqlalchemy import Column, Integer, String, Float, Enum
+from sqlalchemy import Column, Float, Enum, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.database import Base
@@ -22,3 +23,6 @@ class Calculation(Base):
     b = Column(Float, nullable=False)
     type = Column(Enum(CalculationType), nullable=False)
     result = Column(Float, nullable=True)  
+
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="calculations")
